@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html, css } from "lit-element";
 
 export class AbmSurvey extends LitElement {
   static styles = css`
@@ -36,6 +36,7 @@ export class AbmSurvey extends LitElement {
       flex-direction: column;
       align-items: flex-start;
       margin-bottom: 20px;
+      width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
     }
 
     .question-content {
@@ -44,10 +45,33 @@ export class AbmSurvey extends LitElement {
       gap: 10px;
     }
 
+    .survey-image {
+      max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor padre */
+      height: auto; /* Mantiene la proporción de aspecto de la imagen */
+      margin-bottom: 20px; /* Espacio inferior */
+    }
+
     .checkbox {
       font-size: 30px;
       width: 20px;
       height: 20px;
+      margin-left: 10px;
+    }
+
+    .radio {
+      font-size: 30px;
+      width: 20px;
+      height: 20px;
+      margin-left: 10px;
+    }
+
+    .select {
+      font-size: 20px;
+      margin-left: 10px;
+    }
+
+    .text {
+      font-size: 20px;
       margin-left: 10px;
     }
 
@@ -82,6 +106,12 @@ export class AbmSurvey extends LitElement {
       color: white;
       font-size: 20px;
     }
+
+    .claseImg {
+      display: flex;
+      justify-content: center; /* Centra la imagen en el contenedor */
+      align-items: center; /* Centra la imagen verticalmente */
+    }
   `;
 
   static get properties() {
@@ -93,63 +123,54 @@ export class AbmSurvey extends LitElement {
       description: { type: String },
       page: { type: Number },
       pageSize: { type: Number },
-      img: { type: String },
-      alt: { type: String },
     };
   }
 
   constructor() {
     super();
-    this.colorFrameBackground = '#3D4C52';
+    this.colorFrameBackground = "#3D4C52";
     this.questions = [];
     this.checked = false;
-    this.titleSurvey = 'Título de la encuesta';
-    this.description = '';
+    this.titleSurvey = "Título de la encuesta";
+    this.description = "";
     this.page = 0; //start page
     this.pageSize = 4; //number of questions per page
-    this.img = '';
-    this.alt = '';
   }
 
   toggleInput(id) {
     this.checked = !this.checked;
-    console.log('El estado del checkbox ha cambiado', this.checked);
-    console.log('El id del checkbox es', id);
+    console.log("El estado del checkbox ha cambiado", this.checked);
+    console.log("El id del checkbox es", id);
   }
 
   pagging(e) {
-    const nameButton = e.target.classList.contains('next') ? 'next' : 'previous';
+    const nameButton = e.target.classList.contains("next")
+      ? "next"
+      : "previous";
     const totalQuestions = this.questions.length;
+    const totalPages = Math.ceil(totalQuestions / this.pageSize);
 
-    // Encuentra la pregunta `unique` en la página actual.
-    const uniqueQuestionIndex = this.questions.findIndex(
-      (q, index) => q.unique && Math.floor(index / this.pageSize) === this.page
-    );
-
-    if (nameButton === 'next') {
-      // Si hay una pregunta `unique` en la página actual, muestra solo esa pregunta en la siguiente página.
-      if (uniqueQuestionIndex !== -1) {
+    if (nameButton === "next") {
+      // Avanza a la siguiente página
+      if (this.page < totalPages - 1) {
         this.page += 1;
       } else {
-        // Avanza a la siguiente página.
-        if (this.page < Math.ceil(totalQuestions / this.pageSize) - 1) {
-          this.page += 1;
-        } else {
-          // Si estamos en la última página de preguntas normales, avanzar a la página de preguntas `unique` si existe
-          const nextUniquePage = this.questions.findIndex(
-            (q, index) => q.unique && Math.floor(index / this.pageSize) > this.page
-          );
-          if (nextUniquePage !== -1) {
-            this.page = Math.floor(nextUniquePage / this.pageSize);
-          }
+        // Si estamos en la última página, busca la próxima página con preguntas `unique`
+        const nextUniquePage = this.questions.findIndex(
+          (q, index) =>
+            q.unique && Math.floor(index / this.pageSize) > this.page
+        );
+        if (nextUniquePage !== -1) {
+          this.page = Math.floor(nextUniquePage / this.pageSize);
         }
       }
-    } else if (nameButton === 'previous') {
-      // Retroceder a la página anterior si no estamos en la primera página
+    } else if (nameButton === "previous") {
+      // Retrocede a la página anterior si no estamos en la primera página
       if (this.page > 0) {
-        // Si estamos en una página de `unique`, vamos a la página anterior en la paginación normal
+        // Si estamos en una página `unique`, vuelve a la página anterior en la paginación normal
         const prevUniqueQuestionIndex = this.questions.findIndex(
-          (q, index) => q.unique && Math.floor(index / this.pageSize) === this.page - 1
+          (q, index) =>
+            q.unique && Math.floor(index / this.pageSize) === this.page - 1
         );
         if (prevUniqueQuestionIndex !== -1) {
           this.page -= 1;
@@ -162,30 +183,36 @@ export class AbmSurvey extends LitElement {
   }
 
   render() {
-    // Encuentra la pregunta `unique` en la página actual.
+    const start = this.page * this.pageSize;
+    const end = start + this.pageSize;
+
+    // Busca en el index de la pagina en la que estamos si hay una pregunta unica y obtenemos 1 en caso de ser true
     const uniqueQuestionIndex = this.questions.findIndex(
-      (q, index) => q.unique && Math.floor(index / this.pageSize) === this.page
+      (question, index) => question.unique && index >= start && index < end
     );
 
-    // Si hay una pregunta `unique` en la página actual, solo muéstrala en esa página.
-    const visibleQuestions = uniqueQuestionIndex !== -1
-      ? [this.questions[uniqueQuestionIndex]]
-      : this.questions.slice(
-          this.page * this.pageSize,
-          (this.page + 1) * this.pageSize
-        );
+    let visibleQuestions = [];
+    if (uniqueQuestionIndex !== -1) {
+      visibleQuestions = [this.questions[uniqueQuestionIndex]];
+    } else {
+      visibleQuestions = this.questions
+        .slice(start, end)
+        .filter((q) => !q.unique);
+    }
 
     return html`
-      <div class="survey-container" style="background-color: ${this.colorFrameBackground};">
-        ${this.img ? html`<img src="${this.img}" alt="${this.alt}" class="survey-image"/>` : ''}
+      <div
+        class="survey-container"
+        style="background-color: ${this.colorFrameBackground};"
+      >
         <h1>${this.titleSurvey}</h1>
         ${visibleQuestions.map(
           (question) => html`
             <div class="question-item">
               <div class="question-content">
-                ${question.type === 'checkbox'
+                ${question.type === "checkbox"
                   ? question.options.map(
-                      option => html`
+                      (option) => html`
                         <input
                           type="checkbox"
                           id="${option.value}"
@@ -196,9 +223,9 @@ export class AbmSurvey extends LitElement {
                         <label for="${option.value}">${option.label}</label>
                       `
                     )
-                  : question.type === 'radio'
+                  : question.type === "radio"
                   ? question.options.map(
-                      option => html`
+                      (option) => html`
                         <input
                           type="radio"
                           id="${option.value}"
@@ -209,30 +236,41 @@ export class AbmSurvey extends LitElement {
                         <label for="${option.value}">${option.label}</label>
                       `
                     )
-                  : question.type === 'select'
+                  : question.type === "select"
                   ? html`
-                    <select
-                      id="${question.id}"
-                      name="question-${question.id}"
-                      class="select"
-                    >
-                      ${question.options.map(
-                        option => html`<option value="${option.value}">${option.label}</option>`
-                      )}
-                    </select>
-                  `
-                  : question.type === 'text'
+                      <select
+                        id="${question.id}"
+                        name="question-${question.id}"
+                        class="select"
+                      >
+                        ${question.options.map(
+                          (option) =>
+                            html`<option value="${option.value}">
+                              ${option.label}
+                            </option>`
+                        )}
+                      </select>
+                    `
+                  : question.type === "text"
                   ? html`
-                    <input
-                      type="text"
-                      id="${question.id}"
-                      name="question-${question.id}"
-                      class="text"
-                    />
-                  `
-                  : ''
-                }
+                      <input
+                        type="text"
+                        id="${question.id}"
+                        name="question-${question.id}"
+                        class="text"
+                      />
+                    `
+                  : ""}
                 <p class="questionsParraf">${question.text}</p>
+              </div>
+              <div class="claseImg">
+                ${question.img
+                  ? html`<img
+                      src="${question.img}"
+                      alt="${question.alt}"
+                      class="survey-image"
+                    />`
+                  : ""}
               </div>
               ${question.description
                 ? html`<p class="descriptionParraf">${question.description}</p>`
@@ -245,25 +283,17 @@ export class AbmSurvey extends LitElement {
             ? html`<button class="previous" @click="${(e) => this.pagging(e)}">
                 Anterior
               </button>`
-            : ''
-          }
+            : ""}
           <p class="page">${this.page + 1}</p>
-          ${((!this.questions[(this.page + 1) * this.pageSize]?.unique && this.page < Math.ceil(this.questions.length / this.pageSize) - 1) ||
-              this.questions.some(q => q.unique) ||
-              (this.questions[this.page * this.pageSize]?.unique && !this.questions[(this.page + 1) * this.pageSize])
-            ) && 
-          ((this.page < Math.ceil(this.questions.length / this.pageSize) - 1) || this.questions.some(q => q.unique) ||
-          (this.questions[this.page * this.pageSize]?.unique && !this.questions[(this.page + 1) * this.pageSize])
-            )
+          ${this.page < Math.ceil(this.questions.length / this.pageSize) - 1
             ? html`<button class="next" @click="${(e) => this.pagging(e)}">
                 Siguiente
               </button>`
-            : ''
-          }
+            : ""}
         </div>
       </div>
     `;
   }
 }
 
-customElements.define('abm-survey', AbmSurvey);
+customElements.define("abm-survey", AbmSurvey);
