@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit-element";
-import imagen from "../img/muestra.png"; // Asegúrate de que la ruta es correcta
+import imagen from "../img/muestra.png";
 
 export class AbmScreen extends LitElement {
   static styles = css`
