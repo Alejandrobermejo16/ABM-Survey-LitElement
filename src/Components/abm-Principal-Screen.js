@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit-element";
 import './abm-Screen'; 
+import 'abm-components/src/components/mi-componente/mi-componente.js';
 
 export class AbmPrincipalScreen extends LitElement {
   static get properties() {
@@ -56,7 +57,6 @@ export class AbmPrincipalScreen extends LitElement {
   `;
 
   render() {
-    // Cambia el valor de component en función de lo que se haya seleccionado
     switch (this.currentComponent) {
       case 'home':
         return html`
@@ -74,6 +74,8 @@ export class AbmPrincipalScreen extends LitElement {
         `;
       case 'survey':
         return html`<abm-screen></abm-screen>`;
+      case 'maintenance': // Añadimos un caso para el componente de mantenimiento
+        return html`<screen-maintenance></screen-maintenance>`;
       default:
         return this.defaultOption();
     }
@@ -84,12 +86,9 @@ export class AbmPrincipalScreen extends LitElement {
       this.currentComponent = component;
       this.message = '';
     } else {
-      this.message = 'Este componente se encuentra en mantenimiento actualmente, pronto podrás disfrutar de nuevas funcionalidades en la web';
-      setTimeout(() => {
-        this.currentComponent = 'home';         
-        this.message = '';
-        this.requestUpdate();
-      }, 5000);
+      // Si el componente no se encuentra, redirigir a 'maintenance'
+      this.currentComponent = 'maintenance';         
+      this.message = 'Componente no encontrado, redirigiendo a la página de mantenimiento...';
     }
     this.requestUpdate();
   }
