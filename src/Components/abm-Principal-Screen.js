@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit-element";
 import './abm-Screen'; 
-import 'abm-components/src/components/mi-componente/mi-componente.js';
 
 export class AbmPrincipalScreen extends LitElement {
   static get properties() {
@@ -15,7 +14,7 @@ export class AbmPrincipalScreen extends LitElement {
   constructor() {
     super();
     this.title = 'ABM WEB COMPONENTS';
-    this.componentsList = ['home', 'survey'];     
+    this.componentsList = ['home', 'survey','chargeelements'];     
     this.currentComponent = 'home'; 
     this.message = '';
   }
@@ -67,7 +66,7 @@ export class AbmPrincipalScreen extends LitElement {
             <div class='body'>
               <p class='componente' @click=${() => this.changeComponent('survey')}>ABM SURVEY COMPONENT</p>
               <p class='componente' @click=${() => this.changeComponent('maintenance')}>ABM MAINTENANCE COMPONENT</p>
-              <p class='componente' @click=${() => this.changeComponent('other')}>Componente 3</p>
+              <p class='componente' @click=${() => this.changeComponent('chargeelements')}>Elementos de carga</p>
               ${this.message ? html`<p class='mensaje'>${this.message}</p>` : ''}
             </div>
           </div>
@@ -76,6 +75,8 @@ export class AbmPrincipalScreen extends LitElement {
         return html`<abm-screen></abm-screen>`;
       case 'maintenance':
         return html`<screen-maintenance></screen-maintenance>`;
+        case 'chargeelements':
+          return html`<progress-bar progressBar="20" StartLoading="true" timeChange="500"></progress-bar>`;
       default:
         return this.defaultOption();
     }
