@@ -66,7 +66,7 @@ export class AbmPrincipalScreen extends LitElement {
             </header>
             <div class='body'>
               <p class='componente' @click=${() => this.changeComponent('survey')}>ABM SURVEY COMPONENT</p>
-              <p class='componente' @click=${() => this.changeComponent('other')}>Componente 2</p>
+              <p class='componente' @click=${() => this.changeComponent('maintenance')}>ABM MAINTENANCE COMPONENT</p>
               <p class='componente' @click=${() => this.changeComponent('other')}>Componente 3</p>
               ${this.message ? html`<p class='mensaje'>${this.message}</p>` : ''}
             </div>
@@ -74,7 +74,7 @@ export class AbmPrincipalScreen extends LitElement {
         `;
       case 'survey':
         return html`<abm-screen></abm-screen>`;
-      case 'maintenance': // Añadimos un caso para el componente de mantenimiento
+      case 'maintenance':
         return html`<screen-maintenance></screen-maintenance>`;
       default:
         return this.defaultOption();
@@ -86,7 +86,6 @@ export class AbmPrincipalScreen extends LitElement {
       this.currentComponent = component;
       this.message = '';
     } else {
-      // Si el componente no se encuentra, redirigir a 'maintenance'
       this.currentComponent = 'maintenance';         
       this.message = 'Componente no encontrado, redirigiendo a la página de mantenimiento...';
     }
