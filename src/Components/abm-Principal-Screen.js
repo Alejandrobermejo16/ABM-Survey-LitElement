@@ -14,7 +14,7 @@ export class AbmPrincipalScreen extends LitElement {
   constructor() {
     super();
     this.title = 'ABM WEB COMPONENTS';
-    this.componentsList = ['home', 'survey','chargeelements'];     
+    this.componentsList = ['home', 'survey','chargeelements','abm-modal'];     
     this.currentComponent = 'home'; 
     this.message = '';
   }
@@ -67,6 +67,8 @@ export class AbmPrincipalScreen extends LitElement {
               <p class='componente' @click=${() => this.changeComponent('survey')}>ABM SURVEY COMPONENT</p>
               <p class='componente' @click=${() => this.changeComponent('maintenance')}>ABM MAINTENANCE COMPONENT</p>
               <p class='componente' @click=${() => this.changeComponent('chargeelements')}>Elementos de carga</p>
+              <p class='componente' @click=${() => this.changeComponent('abm-modal')}>ABM MODAL</p>
+
               ${this.message ? html`<p class='mensaje'>${this.message}</p>` : ''}
             </div>
           </div>
@@ -77,6 +79,9 @@ export class AbmPrincipalScreen extends LitElement {
         return html`<screen-maintenance></screen-maintenance>`;
         case 'chargeelements':
           return html`<progress-bar progressBar="20" StartLoading="true" timeChange="500"></progress-bar>`;
+          case 'abm-modal':
+          return html`<abm-modal open .message="${'TITULO ABM MODALS'}"></abm-modal>`;
+        
       default:
         return this.defaultOption();
     }
