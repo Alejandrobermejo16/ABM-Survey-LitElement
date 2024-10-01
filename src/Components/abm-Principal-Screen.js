@@ -20,6 +20,9 @@ export class AbmPrincipalScreen extends LitElement {
   }
 
   static styles = css`
+
+
+
     .contenedor-principal {
       width: 100%;
       height: 100vh;
