@@ -7,7 +7,8 @@ export class AbmPrincipalScreen extends LitElement {
       componentsList: { type: Array }, 
       currentComponent: { type: String },
       title: { type: String },
-      message: { type: String }
+      message: { type: String },
+      closeModal: {type: Boolean},
     };
   }
 
@@ -17,12 +18,10 @@ export class AbmPrincipalScreen extends LitElement {
     this.componentsList = ['home', 'survey','chargeelements','abm-modal'];     
     this.currentComponent = 'home'; 
     this.message = '';
+    this.closeModal = false;
   }
 
   static styles = css`
-
-
-
     .contenedor-principal {
       width: 100%;
       height: 100vh;
@@ -49,14 +48,18 @@ export class AbmPrincipalScreen extends LitElement {
       margin-left: 3%;
       font-size: 34px;
       font-weight: bolder;
-      cursor: pointer; /* Cambia el cursor para indicar que es un enlace */
+      cursor: pointer;
     }
     .mensaje {
-      color: red; /* Cambia el color del mensaje si deseas */
+      color: red;
       margin-left: 3%;
       font-size: 20px;
     }
   `;
+
+  handleModalClosed(event) {
+    this.closeModal = !event.detail.open;
+  }
 
   render() {
     switch (this.currentComponent) {
@@ -69,7 +72,7 @@ export class AbmPrincipalScreen extends LitElement {
             <div class='body'>
               <p class='componente' @click=${() => this.changeComponent('survey')}>ABM SURVEY COMPONENT</p>
               <p class='componente' @click=${() => this.changeComponent('maintenance')}>ABM MAINTENANCE COMPONENT</p>
-              <p class='componente' @click=${() => this.changeComponent('chargeelements')}>Elementos de carga</p>
+              <p class='componente' @click=${() => this.changeComponent('chargeelements')}>CHARGED ELEMENTS</p>
               <p class='componente' @click=${() => this.changeComponent('abm-modal')}>ABM MODAL</p>
 
               ${this.message ? html`<p class='mensaje'>${this.message}</p>` : ''}
@@ -80,11 +83,15 @@ export class AbmPrincipalScreen extends LitElement {
         return html`<abm-screen></abm-screen>`;
       case 'maintenance':
         return html`<screen-maintenance></screen-maintenance>`;
-        case 'chargeelements':
-          return html`<progress-bar progressBar="20" StartLoading="true" timeChange="500"></progress-bar>`;
-          case 'abm-modal':
-          return html`<abm-modal open .message="${'TITULO ABM MODALS'}"></abm-modal>`;
-        
+      case 'chargeelements':
+        return html`<progress-bar progressBar="20" StartLoading="true" timeChange="500"></progress-bar>`;
+      case 'abm-modal':
+        return this.closeModal
+          ? html`<p>La modal ha sido cerrada correctamente</p>`
+          : html`<abm-modal .open="${true}" 
+                            .message="${'TITULO ABM MODALS'}"
+                            @modal-closed="${this.handleModalClosed}"></abm-modal>`
+      
       default:
         return this.defaultOption();
     }
