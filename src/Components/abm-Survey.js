@@ -18,7 +18,7 @@ export class AbmSurvey extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 100%;
+      height: 90vh;
       width: 100%;
       border: 3px solid blue;
       border-radius: 10%;
@@ -112,6 +112,21 @@ export class AbmSurvey extends LitElement {
       justify-content: center; /* Centra la imagen en el contenedor */
       align-items: center; /* Centra la imagen verticalmente */
     }
+
+    @media (max-width: 1200px) {
+    .survey-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      width: 100%;
+      border: 3px solid blue;
+      border-radius: 10%;
+      background-color: var(--survey-background-color, #3d4c52);
+      padding: 20px;
+      overflow-y: auto;
+    }
+}
   `;
 
   static get properties() {
